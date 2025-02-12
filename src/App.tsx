@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Scissors, Hand, Square, RotateCcw } from 'lucide-react';
-import { Analytics } from '@vercel/analytics/next';
 
 type Choice = 'rock' | 'paper' | 'scissors';
 type Result = 'win' | 'loss' | 'draw' | null;
@@ -70,7 +69,6 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-      <Analytics />
       <div className="bg-white p-8 rounded-xl shadow-lg max-w-md w-full">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-gray-800 mb-4">Rock Paper Scissors</h1>
