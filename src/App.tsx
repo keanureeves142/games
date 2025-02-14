@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Scissors, Hand, Square, RotateCcw } from 'lucide-react';
+import { Scissors, Hand, Square, RotateCcw, Menu, Edit2 } from 'lucide-react';
+import Layout from './components/Layout';
 
 type Choice = 'rock' | 'paper' | 'scissors';
 type Result = 'win' | 'loss' | 'draw' | null;
@@ -68,90 +69,110 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-      <div className="bg-white p-8 rounded-xl shadow-lg max-w-md w-full">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-800 mb-4">Rock Paper Scissors</h1>
-          <div className="grid grid-cols-4 gap-4 text-sm">
-            <div className="bg-gray-50 p-2 rounded">
-              <p className="font-semibold">Played</p>
-              <p className="text-xl">{stats.played}</p>
-            </div>
-            <div className="bg-green-50 p-2 rounded">
-              <p className="font-semibold">Wins</p>
-              <p className="text-xl text-green-600">{stats.wins}</p>
-            </div>
-            <div className="bg-red-50 p-2 rounded">
-              <p className="font-semibold">Losses</p>
-              <p className="text-xl text-red-600">{stats.losses}</p>
-            </div>
-            <div className="bg-yellow-50 p-2 rounded">
-              <p className="font-semibold">Draws</p>
-              <p className="text-xl text-yellow-600">{stats.draws}</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="flex justify-center gap-4 mb-8">
-          <button
-            onClick={() => handleChoice('rock')}
-            className="p-4 bg-gray-100 rounded-full hover:bg-gray-200 transition-colors"
-            aria-label="Choose Rock"
-          >
-            <Square className="w-8 h-8" />
-          </button>
-          <button
-            onClick={() => handleChoice('paper')}
-            className="p-4 bg-gray-100 rounded-full hover:bg-gray-200 transition-colors"
-            aria-label="Choose Paper"
-          >
-            <Hand className="w-8 h-8" />
-          </button>
-          <button
-            onClick={() => handleChoice('scissors')}
-            className="p-4 bg-gray-100 rounded-full hover:bg-gray-200 transition-colors"
-            aria-label="Choose Scissors"
-          >
-            <Scissors className="w-8 h-8" />
-          </button>
-        </div>
-
-        {result && (
-          <div className="text-center mb-6">
-            <div className="flex justify-center gap-8 mb-4">
-              <div>
-                <p className="text-sm text-gray-600 mb-2">You chose:</p>
-                <div className="p-3 bg-gray-100 rounded-lg">
-                  {playerChoice === 'rock' && <Square className="w-6 h-6" />}
-                  {playerChoice === 'paper' && <Hand className="w-6 h-6" />}
-                  {playerChoice === 'scissors' && <Scissors className="w-6 h-6" />}
-                </div>
-              </div>
-              <div>
-                <p className="text-sm text-gray-600 mb-2">Computer chose:</p>
-                <div className="p-3 bg-gray-100 rounded-lg">
-                  {computerChoice === 'rock' && <Square className="w-6 h-6" />}
-                  {computerChoice === 'paper' && <Hand className="w-6 h-6" />}
-                  {computerChoice === 'scissors' && <Scissors className="w-6 h-6" />}
-                </div>
-              </div>
-            </div>
-            <p className={`text-2xl font-bold ${getResultColor(result)}`}>
-              {result.toUpperCase()}!
-            </p>
-          </div>
-        )}
-
-        <button
-          onClick={resetGame}
-          className="w-full py-2 px-4 bg-gray-800 text-white rounded-lg hover:bg-gray-700 transition-colors flex items-center justify-center gap-2"
-        >
-          <RotateCcw className="w-4 h-4" />
-          Reset Game
-        </button>
+    <Layout>
+      <h1 className="text-2xl font-bold mb-6">Rock Paper Scissors</h1>
+      
+      {/* Game Stats */}
+      <div className="grid grid-cols-4 gap-4 mb-8">
+        <StatBox label="Played" value={stats.played} bgColor="gray" />
+        <StatBox label="Wins" value={stats.wins} bgColor="green" />
+        <StatBox label="Losses" value={stats.losses} bgColor="red" />
+        <StatBox label="Draws" value={stats.draws} bgColor="yellow" />
       </div>
-    </div>
+
+      <GameControls handleChoice={handleChoice} />
+      
+      <GameResult 
+        result={result}
+        playerChoice={playerChoice}
+        computerChoice={computerChoice}
+        getResultColor={getResultColor}
+      />
+
+      <ResetButton resetGame={resetGame} />
+
+      {/* Leaderboard Section */}
+      <div className="mt-8 bg-pink-50 rounded-lg p-6">
+        <h2 className="text-2xl font-bold mb-4">Leader Board</h2>
+        <div className="space-y-2">
+          <p className="text-gray-500">Leaderboard coming soon...</p>
+        </div>
+      </div>
+    </Layout>
   );
 }
+
+// Create new components for better organization
+const GameHeader = ({ stats }) => (
+  <div className="text-center mb-8">
+    <h1 className="text-3xl font-bold text-gray-800 mb-4">Rock Paper Scissors</h1>
+    <div className="grid grid-cols-4 gap-4 text-sm">
+      <StatBox label="Played" value={stats.played} bgColor="gray" />
+      <StatBox label="Wins" value={stats.wins} bgColor="green" />
+      <StatBox label="Losses" value={stats.losses} bgColor="red" />
+      <StatBox label="Draws" value={stats.draws} bgColor="yellow" />
+    </div>
+  </div>
+);
+
+const StatBox = ({ label, value, bgColor }) => (
+  <div className={`bg-${bgColor}-50 p-2 rounded`}>
+    <p className="font-semibold">{label}</p>
+    <p className={`text-xl ${bgColor !== 'gray' ? `text-${bgColor}-600` : ''}`}>{value}</p>
+  </div>
+);
+
+const GameControls = ({ handleChoice }) => (
+  <div className="flex justify-center gap-4 mb-8">
+    <GameButton choice="rock" icon={<Square className="w-8 h-8" />} onClick={handleChoice} />
+    <GameButton choice="paper" icon={<Hand className="w-8 h-8" />} onClick={handleChoice} />
+    <GameButton choice="scissors" icon={<Scissors className="w-8 h-8" />} onClick={handleChoice} />
+  </div>
+);
+
+const GameButton = ({ choice, icon, onClick }) => (
+  <button
+    onClick={() => onClick(choice)}
+    className="p-4 bg-gray-100 rounded-full hover:bg-gray-200 transition-colors"
+    aria-label={`Choose ${choice}`}
+  >
+    {icon}
+  </button>
+);
+
+const GameResult = ({ result, playerChoice, computerChoice, getResultColor }) => (
+  result && (
+    <div className="text-center mb-6">
+      <div className="flex justify-center gap-8 mb-4">
+        <ChoiceDisplay label="You chose:" choice={playerChoice} />
+        <ChoiceDisplay label="Computer chose:" choice={computerChoice} />
+      </div>
+      <p className={`text-2xl font-bold ${getResultColor(result)}`}>
+        {result.toUpperCase()}!
+      </p>
+    </div>
+  )
+);
+
+const ChoiceDisplay = ({ label, choice }) => (
+  <div>
+    <p className="text-sm text-gray-600 mb-2">{label}</p>
+    <div className="p-3 bg-gray-100 rounded-lg">
+      {choice === 'rock' && <Square className="w-6 h-6" />}
+      {choice === 'paper' && <Hand className="w-6 h-6" />}
+      {choice === 'scissors' && <Scissors className="w-6 h-6" />}
+    </div>
+  </div>
+);
+
+const ResetButton = ({ resetGame }) => (
+  <button
+    onClick={resetGame}
+    className="w-full py-2 px-4 bg-gray-800 text-white rounded-lg hover:bg-gray-700 transition-colors flex items-center justify-center gap-2"
+  >
+    <RotateCcw className="w-4 h-4" />
+    Reset Game
+  </button>
+);
 
 export default App;
